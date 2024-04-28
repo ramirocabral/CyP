@@ -1,0 +1,35 @@
+Tarea tarea[40]
+sem mutex_alumnos[40] = ([40] 0)
+sem corregido[40] = ([40] 0)
+sem mutex = 1
+set entregado = 0
+Cola cola_tareas
+int listos = 0
+
+Process Alumno[i = 0 .. 39]:
+    P(mutex_alumnos[i])
+    Tarea mi_tarea = tarea[i]
+    while (not libre[i]):
+        //realizar tarea
+        P(mutex)
+        cola_tareas.push(i)
+        V(mutex)
+        V(entregado)
+        P(corregido[i])
+
+
+//asumo que no hay que usar una barrera para esperar que los alumnos "lleguen"
+Process Maestra:
+    for i = 0 to 39 :
+        tarea[i] = asignar_tarea()
+        V(mutex_alumnos[i])
+
+    while (listos < 40):
+        P(entregado)
+        P(mutex)
+        alumno = cola.pop()
+        V(mutex)
+        if (tarea_correcta(alumno)):
+            libre[alumno] = true
+            listos++;
+        V(corregido[alumno])

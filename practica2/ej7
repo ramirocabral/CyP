@@ -1,0 +1,13 @@
+int productos_grupo[5] = ([5] 0)
+sem mutex_grupo[5] = ([5] 1)
+
+Process Empleado[id = 1 .. 15]:
+    int grupo = (id // 3) + 1
+    P(mutex_grupo[grupo])
+    while (productos_grupo[grupo] < P):
+        productos_grupo++
+        V(mutex_grupo[grupo])
+        //realizar tarea
+        P(mutex_grupo[grupo]) 
+
+    V(mutex_grupo[grupo])

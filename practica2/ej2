@@ -1,0 +1,22 @@
+sem camion_trigo = 5
+sem camion_maiz = 5
+sem camiones = 7
+sem mutex = 1
+
+Process CamionTrigo[i = 1 .. T]:
+    P(camion_trigo)
+    P(camiones)
+    P(mutex)
+    descargar()
+    V(mutex)
+    P(camiones)
+    V(camion_trigo)
+
+Process CamionMaiz[j = 1 .. M]:
+    P(camion_maiz)
+    P(camiones)
+    P(mutex)
+    descargar()
+    V(mutex)
+    V(camiones)
+    V(camion_maiz)

@@ -1,0 +1,36 @@
+Queue cola;
+int pasajeros_combi[4] = ([25] 0) //id de los pasajeros a bordo
+int total_pasajeros = 0
+boolean pasaje[C] = ([C] False)
+sem mutex_cola = 1
+sem mutex_combi[4] = ([4] 0)
+sem espera[C] = ([C] 0)
+
+Process Pasajero[id = 1 .. C]:
+    P(mutex_cola)
+    cola.push(id,combi)
+    V(mutex_cola)
+    V(mutex_vendedor)
+    P(espera[id])
+    if (pasaje[id]):
+        //recorrido
+        P(espera[id])
+    //retirarse
+
+Process Combi[i = 1 .. 4]:
+    P(mutex_combi[i]) 
+    //hacer recorrido
+    for (int j = 0 to 24):
+        V(espera[pasajeros[j]])
+        
+Process Vendedor:
+    while (total_pasajeros < C):
+        P(mutex_vendedor)
+        P(mutex_cola)
+        int pasajero, int id_combi = cola.pop()
+        V(mutex_cola)
+        if (pasajeros[id_combi] < 25):
+            pasajeros[id_combi]++
+            total_pasajeros++
+            pasaje[pasajero] = True
+        V(espera[pasajero])

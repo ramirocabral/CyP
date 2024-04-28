@@ -1,0 +1,124 @@
+// a)
+sem mutex_focotopiadora = 1
+
+Process Persona[i = 0 .. N-1]:
+    while True:
+        // Procesar
+        P(mutex_fotocopiadora)
+        Fotocopiar()
+        V(mutex_fotocopiadora)
+
+
+// b)
+sem mutex = 1
+sem fotocopiar = 0
+int fotocopiados = 0
+Queue cola
+
+Process Persona[i = 0 .. N-1]
+    // Procesar
+    P(mutex)
+    cola.encolar(documento)
+    V(mutex)
+    V(fotocopiar)
+
+Process Fotocopiadora:
+    while fotocopiados < N:
+        P(fotocopiar)
+        P(mutex)
+        Fotocopiar(cola.pop())
+        V(mutex)
+        fotocopiados++
+
+
+//c)
+sem mutex = 1
+sem fotocopiar = 0
+int fotocopiados = 0
+Queue cola
+
+Process Persona[i = 0 .. N-1]
+    // Procesar
+    P(mutex)
+    cola.encolar(documento)
+    V(mutex)
+    V(fotocopiar)
+
+Process Fotocopiadora:
+    while fotocopiados < N:
+        P(fotocopiar)
+        P(mutex)
+        Fotocopiar(cola.get_max_edad())
+        V(mutex)
+        fotocopiados++
+
+
+//d)
+sem mutex_personas[N] = ([N] 0)
+
+Process Persona[i = 0 .. N-1]:
+    while True:
+        // Procesar
+        if (i != 0):
+            P(mutex_personas[i - 1])   
+        Fotocopiar()
+        V(mutex_personas[i])
+
+
+//e)
+sem mutex = 1
+sem mutex_fotocopiadora[N] = ([40] 0)
+sem fotocopiar = 0
+int fotocopiados = 0
+Queue cola
+
+Process Persona[i = 0 .. N-1]
+    // Procesar
+    P(mutex)
+    cola.encolar(documento)
+    V(mutex)
+    V(fotocopiar)
+    P(mutex_fotocopiadora[i])
+    Fotocopiar()
+
+Process Empleado:
+    while fotocopiados < N:
+        P(fotocopiar)
+        P(mutex)
+        persona = cola.pop()
+        V(mutex_fotocopiadora[persona])
+        V(mutex)
+        fotocopiados++
+
+
+//f)
+sem mutex = 1
+sem mutex_fotocopiadora[N] = ([40] 0)
+int fotocopiadora_asignada[N] = ([40] 0)
+sem fotocopiar = 0
+int fotocopiados = 0
+Queue cola
+
+Process Persona[i = 0 .. N-1]
+    // Procesar
+    P(mutex)
+    cola.encolar(documento)
+    V(mutex)
+    V(fotocopiar)
+    P(mutex_fotocopiadora[i])
+    Fotocopiar()
+
+Process Empleado:
+    while fotocopiados < N:
+        P(fotocopiar)
+        P(mutex)
+        persona = cola.desencolar()
+        fotocopiadora_asignada[persona] = asignar_fotocopiadora(persona)
+        V(mutex_fotocopiadora[i])
+        V(mutex)
+        fotocopiados++
+
+Process Fotocopiadora[i - 1 .. 10]:
+    while fotocopiados < N:
+       P(fotocopiar) 
+       P(fotocopiadora[i])

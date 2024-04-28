@@ -1,0 +1,16 @@
+Queue cola
+sem mutex = 1
+sem q = 5
+
+Process Worker:
+    while True:
+        // codigo 
+        P(q)
+        P(mutex)
+        Elemento e = cola.pop()
+        V(mutex)
+        // uso de la cola
+        P(mutex)
+        cola.push(elemento)
+        V(mutex)
+        V(q)

@@ -1,0 +1,50 @@
+Cola cola
+sem mutex = 1
+sem maquina = 1
+int botellas = 20
+sem espera[C] = ([40] 0)
+int corredores = 0
+boolean libre = True
+
+Process Corredor[i = 0 .. C-1]:
+    P(mutex)
+    corredores++
+    if (corredores == C):
+        for (int j = 1 to C):
+            V(barrera)
+    V(mutex)
+    P(barrera)
+    //arranca la carrera
+
+    P(maquina)
+    if libre:
+        libre = false
+        V(maquina)
+    else:
+        cola.push(i)
+        V(maquina)
+        P(espera[i])
+
+    if botellas == 0:
+        corredor_actual = i;
+        V(mutex_repositor)
+        P(espera[i])
+
+    //tomar botella
+    botellas--
+    corredores--
+    if (coredores == 0)
+        V(mutex_repositor)
+    P(maquina)
+    if (cola.empty()):
+        libre = true
+    else:
+        V(espera[cola.pop()])
+    V(maquina)
+
+Process Repositor:
+    P(mutex_repositor)
+    while retirados < C:
+        botellas = 20
+        V(espera[corredor_actual])
+        P(mutex_repositor)
