@@ -1,0 +1,18 @@
+boolean tenedor[5] = ([5] true);
+
+Process Filosofo[id = 0.3]{
+    <await(tenedor[id]); tenedor[id] = false>
+    <await(tenedor[id+1]); tenedor[id+1] = false>
+    Comer();
+    <tenedor[id] = false;
+    tenedor[id+1] = false;>
+}
+
+Process Filosofo [id =4]{
+    <await(tenedor[0]); tenedor[0] = false>;
+    <await(tenedor[4]); tenedor[4] = false>;
+    Comer();
+    <tenedor[0] = false;
+    tenedor[4] = false;>
+}
+

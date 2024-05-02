@@ -1,0 +1,79 @@
+sem marcos = 0;
+sem deposito_m = 30;
+sem deposito_v = 50;
+sem mutex_vidrio = 1;
+
+Process Carpintero[id = 0..3]{
+    while true{
+        P(deposito_m);
+        //hacer marco
+        V(marcos);
+    }
+}
+
+Process Vidriero[id = 1]{
+    while true{
+        P(deposito_v);
+        V(vidrio);
+    }
+}
+
+Process Armador[id = 0..1]{
+    while true{
+        V(deposito_m);
+        P(marcos);
+
+        V(deposito_v);
+        V(vidrios)
+
+        P(mutex_ventanas);
+        ventanas++
+        V(mutex_ventanas);
+    }
+}
+
+sem marco = 0, vidrio = 0, mutex_v = 1;
+sem deposito_m = 30, deposito_v = 50;
+int ventana = 0;
+
+
+process Carpintero[id:0..4]
+{
+  while (true) {
+    p(deposito_m);
+
+    -- Hace un marco
+
+    v(marco);
+  }
+}
+
+process Vidriero
+{
+  while (true) {
+    p(deposito_v);
+
+    -- Hace un vidrio
+
+    v(vidrio);
+  }
+}
+
+process Armador[id:0..1]
+{
+  while (true) {
+    p(marco);
+    v(deposito_m);
+    p(vidrio);
+    v(deposito_v)
+
+    -- Armo la ventana
+
+    p(mutex_v);
+    ventana++;
+    v(mutex_v);
+  }
+}
+
+
+

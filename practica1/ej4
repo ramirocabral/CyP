@@ -1,0 +1,30 @@
+//inciso D)
+
+int id_actual = 0;
+
+Process Persona[id= 0..N]{
+    <await (id_actual == id);>
+    Imprimir(documento);
+    <id_actual = id_actual + 1>
+}
+
+//inciso E)
+
+Queue cola;
+int siguiente;
+int personas = N;
+boolean ok = false;
+
+Process Persona [id = 0..N]{
+    <push(cola,id,edad)>
+    <await (siguiente == id)>
+    Imprimir(documento);
+    <ok = true>
+}
+
+Process Coordinador{
+    while personas > 0{
+        <await(!cola.empty(); siguiente = maximo(queue); personas = personas - 1>
+        <await(ok); ok = false>
+    }
+}

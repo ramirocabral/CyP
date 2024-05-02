@@ -1,0 +1,5 @@
+Process proceso{
+    <await (! cola.empty()); pop(cola, recurso)>
+    //usar recurso
+    <push(cola,recurso)>;
+}

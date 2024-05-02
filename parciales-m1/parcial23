@@ -1,0 +1,128 @@
+En una estación de trenes, asisten P personas que deben realizar una carga de su tarjeta SUBE en la terminal
+disponible. La terminal es utilizada en forma exclusiva por cada persona de acuerdo con el orden de llegada.
+Implemente una solución utilizando sólo emplee procesos Persona. Nota: la función UsarTerminal() le permite cargar
+la SUBE en la terminal disponible. 
+
+
+sem mutex_fila = 1;
+boolean libre = true;
+sem espera[P] = ([P] 0);
+Queue cola;
+
+Process Persona[id = 0..P-1]{
+    P(mutex_fila);
+    int id_actual;
+    if (libre){
+        libre = false;
+        V(mutex_fila);
+    }
+    else{
+        push(cola,id);
+        V(mutex_fila);
+        P(espera[id]);
+    }
+
+    UsarTerminal();
+    
+    P(mutex_fila);
+    if (empty(cola)){
+        libre = true;
+    }
+    else{
+        pop(cola,id_actual);
+        V(espera[id_actual]);
+    }
+    V(mutex_fila);
+}
+
+Resuelva el mismo problema anterior pero ahora considerando que hay T terminales disponibles. Las personas
+realizan una única fila y la carga la realizan en la primera terminal que se libera. Recuerde que sólo debe emplear
+procesos Persona. Nota: la función UsarTerminal(t) le permite cargar la SUBE en la terminal t.
+
+
+sem mutex_fila = 1;
+sem mutex_cola = 1;
+boolean libre = true;
+sem espera[P] = ([P] 0);
+Queue cola;
+Queue terminales;
+int libres = T;
+
+Process Persona[id = 0..P-1]{
+    P(mutex_fila);
+    int id_actual, t;
+    if (libres > 0){
+        libres--;
+        V(mutex_fila);
+    }
+    else{
+        push(cola,id);
+        V(mutex_fila);
+        P(espera[id]);
+    }
+    P(mutex_cola);
+    t = pop(terminales);
+    V(mutex_cola);
+
+    UsarTerminal(t);
+
+    P(mutex_cola);
+    push(terminales,t);
+    V(mutex_cola);
+    
+    P(mutex_fila);
+    if (empty(cola)){
+        libres++;
+    }
+    else{
+        pop(cola,id_actual);
+        V(espera[id_actual]);
+    }
+    V(mutex_fila);
+}
+
+Resolver con MONITORES el siguiente problema: En una elección estudiantil, se utiliza una máquina para voto
+electrónico. Existen N Personas que votan y una Autoridad de Mesa que les da acceso a la máquina de acuerdo con el
+orden de llegada, aunque ancianos y embarazadas tienen prioridad sobre el resto. La máquina de voto sólo puede ser
+usada por una persona a la vez. Nota: la función Votar() permite usar la máquina.
+
+
+Process Persona[id = 0..N-1]{
+    int prioridad = ObtenerPrioridad();
+    Maquina.Llegada(id,prioridad);
+    Votar();
+    Maquina.Salida();
+}
+
+Process Autoridad{
+    while (true){
+        Maquina.Siguiente();
+    }
+}
+
+Monitor Maquina{
+
+cond colas[N];
+cond cvFila,autoridad;
+Queue cola;
+
+    Procedure Llegada(id,prioridad : in int){
+        push(cola,id,prioridad);
+        signal(autoridad);
+        wait(colas[id]);
+    }
+
+    Procedure Salida(){
+        signal(fin);
+    }
+
+    Procedure Siguiente(){
+        if (empty(fila)){
+            wait(autoridad);
+        }
+        int id = pop(fila);
+        signal(colas[id]);
+        wait(fin);
+    }
+}
+

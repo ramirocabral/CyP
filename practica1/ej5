@@ -1,0 +1,27 @@
+int alumnos = 0;
+Cola cola;
+boolean libre[P] = ([P] false);
+boolean iniciar = false;
+
+Process Alumno [id = 1 .. P]{
+    <alumnos = alumnos + 1>  //informamos la llegada
+    <await (iniciar)>
+    //resolver examen
+    <push(cola,id)>;
+    <await (libre[id] == true)>
+    //obtener nota
+    //irse al pingo
+}
+
+Process Profesor [i = 1.. 3]{
+    <await (alumnos == P); iniciar = false >
+    int id_act = -1;
+
+    while (alumnos > 0){
+        <await (!cola.empty() || alumnos == 0);
+        if (alumnos == 0) break; 
+        else id_act = pop(cola); alumnos = alumnos - 1;>
+        //corregir examen
+        <libre[id_act] = true>;
+    }
+}

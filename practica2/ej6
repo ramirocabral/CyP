@@ -24,7 +24,7 @@ Process Combi[i = 1 .. 4]:
         V(espera[pasajeros[j]])
         
 Process Vendedor:
-    while (total_pasajeros < C):
+    while (pasajes_vendidos < 100):
         P(mutex_vendedor)
         P(mutex_cola)
         int pasajero, int id_combi = cola.pop()
