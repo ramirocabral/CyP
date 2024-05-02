@@ -1,0 +1,31 @@
+Monitor DB {
+int consultas = 0;
+int esperando = 0;
+cond cvConsulta;
+
+    Procedure entrar(){
+        if (consultas == 5){
+            esperando = esperando + 1;
+            wait(cvConsulta);
+        }
+        else{
+            consultas = consultas + 1;
+        }
+    }
+
+    Procedure salir(){
+        if (esperando > 0){
+            esperando = esperando - 1;
+            signal(cvConsulta);
+        }
+        else{
+            consultas = consultas - 1; 
+        }
+    }
+}
+
+Process Lector{
+    DB.entrar();
+    //consultar
+    DB.salir();
+}

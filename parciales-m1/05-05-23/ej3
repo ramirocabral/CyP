@@ -1,0 +1,39 @@
+Process Controlador[id = 0..14]{
+    int medicion;
+    int accion;
+    while (true){
+        medir(medicion);
+        Pedido.DeterminarAccion(medicion,accion);
+        actuar(accion);
+        delay(x);  
+    } 
+}
+
+Process ModuloCentral{
+    while True{
+        Pedido.Atender();
+    }
+}
+
+Monitor Pedido{
+
+cond cvModulo, espera;
+int acciones[15];
+Queue cola;
+
+    Procedure DeterminarAccion(id, medicion : in int; accion : out int){
+        push(cola,(id,medicion));
+        signal(cvModulo);
+        wait(espera);
+        accion = acciones[id];
+    }
+
+    Procedure Atender(){
+        if (cola.empty()){
+            wait(cvModulo);
+        }
+        pop(fila,id,medicion);
+        determinar(acciones[id],medicion);
+        signal(espera);
+    }
+}

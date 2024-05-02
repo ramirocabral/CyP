@@ -1,0 +1,33 @@
+int entradas_disponibles = E;
+int atendidos = 0;
+Queue cola;
+int id_siguiente = -1;
+int entradas[P];
+
+Process Persona [id = 0..P-1]{
+   <push(cola,id)>
+   <await(atendido[id] == true)>
+   int entrada = entradas[id];
+}
+
+Process Boleteria [i = 1..5]{
+    int id_act;
+    while(atendidos < P ){
+        <await(!cola.empty() || atendidos == P);
+        if (atendidos == P){
+            break;
+        }
+        else{
+            pop(cola,id_act);
+            atendidos++;
+        }>
+
+        if (entradas_disponibles > 0){
+            entradas[id_act] = GenerarEntrada();
+            <entradas_disponibles-->;
+        }
+        else{
+            entradas[id_act] = -1; //entradas agotadas
+        }
+    }
+}

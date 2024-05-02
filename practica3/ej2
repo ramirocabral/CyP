@@ -1,0 +1,193 @@
+//inciso A)
+
+Monitor Fotocopiadora{
+
+cond cv;
+
+    Procedure usar(){
+        Fotocopiar();
+    }
+}
+
+
+Process Persona[id = 0..N-1]{
+    Fotocopiadora.usar();
+}
+
+
+//inciso B)
+
+Monitor Fila{
+
+boolean libre = true; 
+cond cv;
+int esperando;
+
+    Procedure entrar(){
+        if (libre)
+            libre = false;
+        else{
+            esperando = esperando + 1;
+            wait(cv);
+        }
+    }
+
+    Procedure salir(){
+        if (esperando > 0){
+            esperando = esperando - 1;
+            signal(cv);
+        }
+        else{
+            libre = true; 
+        }
+    }
+
+}
+
+Process Persona[id = 0..N-1]{
+    Fila.entrar():
+    Fotocopiar();
+    Fila.salir():
+}
+
+//inciso C)
+
+Monitor Fila{
+
+boolean libre = true; 
+cond espera[N];
+Queue cola;
+int id_siguiente;
+
+    Procedure llegar(id, edad : in int){
+        if (libre){
+            libre = false;
+        }
+        else{
+            push(cola,id,edad)
+            wait(espera[id_siguiente]);
+        }
+    }
+
+    Procedure salir(){
+        if (!cola.empty()){
+            pop(cola,id_siguiente);
+            signal(espera[id_siguiente]);
+        }
+        else{
+            libre = true; 
+        }
+    }
+
+}
+
+Process Persona[id = 0..N-1]{
+    File.llegar(id,edad):
+    Fotocopiar();
+    Fila.salir():
+}
+
+//inciso D)
+
+Monitor Fila{
+id_actual = 0;
+cond cv;
+cond espera[N];
+    
+    Procedure llegar(id : in int){
+        if (id != id_actual){
+            wait(espera[id]);
+        }
+    }
+
+    Procedure salir(){
+        id_actual = id_actual + 1;
+        signal(espera[id_actual]);
+    }
+}
+
+
+Process Persona[id = 0..N-1]{
+    File.llegar(id):
+    Fotocopiar();
+    Fila.salir():
+}
+
+//inciso E)
+
+Monitor Atencion{
+int esperando = 0;
+cond fila;
+
+    Procedure esperar_llamado(id : in int){
+        esperando = esperando + 1;         
+        signal(cvEmpleado);
+        wait(signal);
+    }
+
+    Procedure habilitar(){
+        if (esperando == 0){
+            wait(cvEmpleado);
+        }
+        esperando = esperando - 1;
+        signal(fila);
+        wait(cvListo);
+    }
+
+    Procedure salir(){
+        signal(cvListo);
+    }
+}
+
+Process Empleado{
+    int atendidos = 0;
+    while (atendidos < N){
+        Atencion.habilitar();
+        atendidos = atendidos + 1;
+    }
+}
+
+//inciso F)
+
+Monitor Atencion{
+int esperando = 0;
+Queue foto_libres = {1..10};
+Queue fila;
+cond espera[N], cvEmpleado, cvListo;
+
+    Procedure esperar_llamado(id : in int, num_foto: out int){
+        push(fila,id);
+        signal(cvEmpleado);
+        wait(espera[id]);
+        num_foto = asignaciones[id];
+    }
+
+    Procedure habilitar(){
+        if (emtpy(fila)){
+            wait(cvEmpleado);
+        }
+        pop(fila,id_act);
+        asignaciones[id_act] = pop(foto_libres);
+        signal(espera[id_act]);
+        wait(cvListo);
+    }
+
+    Procedure salir(num_foto: in int){
+        push(foto_libres,num_foto)
+        signal(cvListo);
+    }
+}
+
+Process Empleado{
+    int atendidos = 0;
+    while (atendidos < N){
+        Atencion.habilitar();
+        atendidos = atendidos + 1;
+    }
+}
+
+Process Persona{
+    Atencion.esperar_llamado(id);
+    Fotocopiar(num_foto);
+    Atencion.salir(num_foto);
+}

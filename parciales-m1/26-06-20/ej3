@@ -1,0 +1,66 @@
+Process Jugador[id = 1..30]{
+    Instrucciones inst;
+    int grupo;
+    Fila.Llegada();
+    Martillo.Usar(inst);
+    Fila.Salida();
+    Grupo.reunirse();
+    Jugar();
+}
+
+Monitor Coordinador{
+int posicion = 1;
+
+    Procedure InformarPosicion(grupo: in int; posicion : out int){
+         
+    }
+}
+
+
+Monitor Grupo[ i = 1..4]{
+    int posicion; 
+    int cant;
+
+    Procedure reunirse(){
+        cant++; 
+        if (cant == 6){
+            signal_all(espera);
+        }
+        else{
+            wait(espera);
+        }
+    }
+}
+
+Monitor Martillo{
+    Procedure Usar(inst : out Instrucciones, grupo : out int){
+        Romper(inst,grupo);
+    }
+}
+
+Monitor Fila{
+
+bool libre = true;
+int esperando = 0;
+cond cvEspera;
+
+    Procedure Llegada(){
+        if (libre){
+            libre = false; 
+        }
+        else{
+            esperando++;
+            wait(cvEspera);
+        }
+    }
+
+    Procedure Salida(){
+        if (esperando > 0){
+            esperando--;
+            signal(cvEspera);
+        }
+        else{
+            libre = true;
+        }
+    }
+}

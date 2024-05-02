@@ -1,0 +1,41 @@
+Monitor Corralon{
+Queue fila;
+cond cvEmpleado, espera
+Lista lista_actual;
+Comprobante comprobantes[N];
+    
+    Procedure Llegada(id : in int; lista : in lista, comprobante : out Comprobante){
+        push(fila,(id,lista));
+        signal(cvEmpleado);
+        wait(espera);
+        comprobante = comprobantes[id];
+    }
+
+    Procedure Siguiente(id : out int; lista: out lista){
+        if (empty(fila)){
+            wait(cvEmpleado);
+        }
+        pop(fila,(id,lista));
+    }
+
+    Procedure DarComprobante(id : in int, comprobante : int Comprobante){
+        comprobantes[id] = comprobante;
+        signal(espera);
+    }
+}
+
+Process Persona[id = 0..N-1]{
+    Comprobante comprobante;
+    Atencion.Llegada(id,lista,comprobante);
+}
+
+Process Empleado{
+    int id_act, atendidos;
+    Lista lista;
+    Comprobante comp;
+    while (atendidos < N){
+        Corralon.Siguiente(id,lista);
+        comp = generarComprobante(id,lista);
+        Corralon.DarComprobante(id,comprobante);
+    }
+}

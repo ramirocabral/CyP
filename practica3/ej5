@@ -1,0 +1,50 @@
+Monitor Tarea {
+
+int alumno[50];
+int grupo[25] = ([25] 0);
+int notas[25];
+int nota_act = 25;
+int cant_alumnnos = 0;
+boolean listo = false;
+cond cvJTP, cvAlumno, cvGrupo[25];
+
+    Procedure Llegada(id : in int; grupo : out int){
+        if (cant_alumnos++ == 50){
+            listo = true;
+            signal(cvJTP);
+        }
+        wait(cvAlumno);
+        grupo = grupo[id];
+    }
+
+    Procedure AsignarNumeros(){
+        if (!listo){
+            wait(cvJTP);
+        }
+        for (i = 1..50){
+            alumno[i] = DarNumero();
+            signal(cvAlumno);
+        }
+    }
+
+    Procedure Entregar(num_grupo : in int; nota : out int){
+        if (grupo[num_grupo]++ == 2){
+            finalizados++; 
+            push(grupos,num_grupo);
+            signal(cvJTP);
+        }
+        wait(cvGrupo[num_grupo]);
+        nota = notas[num_grupo];
+    }
+
+    Procedure EntregarNota(){
+        int grupo_act;
+        if (finalizados == 0){
+            wait(cvJTP);
+        }
+        pop(grupos,grupo_act);
+        notas[grupo_act] = nota_act;
+        nota_act--;
+        signal_all(cvGrupo[grupo_act]);
+    }
+}

@@ -1,0 +1,38 @@
+Process Persona[id = 1..20]{
+    int mi_grupo, monto = 0;
+    int puntaje;
+    Juego.LLegada(mi_grupo);
+    for (i = 0..15){
+        monto += Moneda();
+    }
+    Juego.Finnalizar(monto,mi_grupo,puntaje);
+}
+
+Monitor Juego{
+
+int grupo[5] = ([5] 0);
+int puntos[5] = ([[5]] 0);
+cond cvGrupo[5];
+    
+    Procedure Llegada(num_grupo : in int){
+        if (grupo[num_grupo]++ < 4 ){
+           wait(cvGrupo[num_grupo]);
+        }
+        else{
+            signal_all(cvGrupo[num_grupo]);
+        }
+    }
+
+    Procedure Finalizar(monto,num_grupo : in int, puntos : out int){
+        puntos[num_grupo] += monto;
+        grupo[num_grupo]--;
+        if (grupo[num_grupo] == 0){
+           signal_all(cvGrupo[5]);
+        }
+        else{
+            wait(cvGrupo[5]);
+        }
+        puntos = puntos[num_grupo];
+    }
+}
+

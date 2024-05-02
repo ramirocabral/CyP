@@ -1,0 +1,18 @@
+int numero[C];
+int id_siguiente;
+
+Process Cliente[id = 0..C-1]{
+    <push(cola,id)>
+    <await(atendido[id] == true)>
+    imprimir(numero[id]);
+}
+
+Process Empleado{
+    for (int i = 1 .. C){
+        <await(!cola.emtpy());
+        pop(cola,id);
+        >
+        numero[id] = Random();
+        atendido[id] = true;
+    }
+}

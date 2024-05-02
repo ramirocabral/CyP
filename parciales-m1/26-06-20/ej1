@@ -1,0 +1,37 @@
+# 1. Resolver con SENTENCIAS AWAIT (<> y/o <await B; S>) el siguiente problema. Se debe 
+# simular una maratón con C corredores donde en la llegada hay UNA máquinas 
+# expendedoras de botella de agua. Cuando los C corredores han llegado al inicio comienza la 
+# carrera. Cuando un corredor termina la carrera se dirige a la máquina expendedora, espera su 
+# turno (respetando el orden de llegada), saca una botella y se retira. Nota: maximizar la 
+# concurrencia.
+
+int cant_corredores = 0;
+int siguiente = -1;
+
+Process Corredor[id = 1..C]{
+    <cant_corredores++> 
+    <await(cant_corredores == C)>
+
+    //carrera
+
+    <if (siguiente == -1){
+        siguiente = id;
+    }
+    else{
+        push(cola,id);
+    }
+    >
+
+    <await(siguiente == id)>;
+
+    //tomar botella
+
+    <if (cola.empty()){
+        siguiente = -1;
+    }
+    else{
+        pop(cola,siguiente);
+    }>
+
+}
+

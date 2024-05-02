@@ -1,0 +1,41 @@
+Resolver el siguiente problema con MONITORES. Simular el funcionamiento de un Complejo de Canchas de Futbol 5 que posee 8 canchas y donde hay una máquina encargada de asignar las canchas.
+Al complejo acuden 80 jugadores divididos en 8 grupos (cada grupo tiene las 10 personas que jugarán en una cancha), cada jugador ya conoce a qué grupo pertenece.
+Cuando un jugador llega le indica a la máquina el grupo al que pertenece para que esta le indique el número de cancha a la cual debe ir, y luego se dirige a ella.
+Cuando los 10 integrantes de un grupo han llegado a la cancha que les corresponde, comienzan a jugar el partido que dura 50 minutos; y luego se retiran. La máquina asigna el número de cancha de acuerdo al orden en que llega el primer jugador de cada grupo. Nota: maximizar la concurrencia. 
+
+
+Process Jugador[id = 1..80]{
+    int grupo; //ya los sabe de antemano
+    int cancha;
+    Maquina.CanchaAsignada(grupo,cancha);
+    Cancha[cancha].Llegada();
+}
+
+Monitor Maquina{
+    int cancha_grupo[8] = ([8] -1);
+    int contador_cancha = 1;
+
+    Procedure CanchaAsignada(grupo : in int; cancha : out int){
+        if (cancha_grupo[grupo] == -1){
+            cancha_grupo[grupo] = contador_cancha;
+            contador_cancha++;
+        }
+        cancha = cancha_grupo[grupo];
+    }
+}
+
+Monitor Cancha[id = 1..8]{
+int jugadores = 0;
+cv cvEspera;
+
+    Procedure Llegada(){
+        jugadores++;
+        if(jugadores == 10){
+            signal_all(cvEspera);
+        }
+        else{
+            wait(cvEspera);
+        }
+        delay(50);
+    }
+}

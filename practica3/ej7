@@ -1,0 +1,43 @@
+Monitor Carrera{
+int corredores=0, esperando = 0;
+cond cvCorredores, cvFila, cvBotella;
+boolean libre = false;
+    
+    Procedure Llegada(){
+        if (corredores++ == C){
+            signal_all(cvCorredores);
+        }
+        else{
+            wait(cvCorredores);
+        }
+    }
+
+    Procedure Terminar(){
+        if (!libre){
+            esperando++;
+            wait(cvFila);
+        }
+        else{
+            libre = false;
+        }
+        if (botellas == 0){
+            signal(cvRepositor);
+        }
+        botellas--;
+        if (esperando == 0){
+            libre = true;
+        }
+        else{
+            esperando--;
+            signal(cvFila);
+        }
+    }
+
+    Procedure Reponer(){
+        if (botellas > 0){
+            wait(cvRepositor);
+        }
+        botellas = 20;
+        signal(cvBotella);
+    }
+}

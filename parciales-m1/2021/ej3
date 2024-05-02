@@ -1,0 +1,33 @@
+Resolver el siguiente problema con SEMÁFOROS. Simular la atención en un Centro de Vacunación con 8 puestos para vacunar contra el coronavirus. Al Centro acuden 200 pacientes para ser vacunados, cada uno de ellos ya conoce el puesto al que se debe dirigir.
+En cada puesto hay UN empleado para vacunar a los pacientes asignados a dicho puesto, y lo hace de acuerdo al orden de llegada al mismo. Cada paciente al llegar al puesto que tenía asignado espera a que lo llamen para vacunarlo, y al terminar se retira.
+Nota: suponer que existe una función Vacunar() que simula la atención del paciente por parte del empleado. Suponer que cada puesto tiene asignado 25 pacientes. Todos los procesos deben terminar
+
+Queue cola[8];
+sem mutex_puesto[8] = ([8] 1);
+sem espera[200] = ([200] 0);
+sem empleado[8] = ([8] 0);
+
+
+Process Paciente[id = 0..199]{
+    int puesto; 
+    P(mutex_puesto[puesto]);
+    push(cola[puesto],id);
+    V(mutex_puesto[puesto]);
+    
+    V(empleado[puesto]);
+    P(espera[id]);
+}
+
+Process Empleado[id = 0..7]{
+    int id_actual;
+    for (int i=0..24){
+        P(empleado[id]);
+
+        P(mutex_puesto[id]);
+        pop(cola[id],id_actual)
+        V(mutex_puesto[id]);
+
+        Vacunar(id_actual);
+        V(espera[id_actual]);
+    }
+}

@@ -1,0 +1,92 @@
+Monitor Recepcion{
+
+Queue profesores;
+cond espera;
+int libres = 3;
+int esperando = 0;
+int atendidos = 0;
+
+    Procedure Llegar(esc : out int){
+        if (libres == 0){
+            esperando++;
+            wait(espera);
+        }
+        else{
+            libres--;
+        }
+        pop(profesores,esc);
+    }
+
+    Procedure Siguiente(id_profesor : in int){
+        push(profesores,id_profesor);
+        if (esperando > 0){
+            esperando--;
+            signal(espera);
+        }
+        else{
+            libres++;
+        }
+    }
+
+    Procedure QuedanAlumnos(quedan : out boolean){
+        out = (atendidos++ <=N);
+    }
+}
+
+Monitor Escritorio[id = 0..2]{
+boolean listo = false;
+Examen examen;
+int nota;
+
+    Procedure Examen(ex : in Examen, nota_examen : out int){
+        examen = ex;
+        listo = true;
+        signal(cvProfesor);
+        wait(cvAlumno);
+        nota_examen = nota;
+        signal(cvProfesor);
+    } 
+    
+    Procedure EsperarExamen(ex : out Examen){
+        if (!listo){
+            wait(cvProfesor)
+        }
+        ex = examen;
+    }
+
+    Procedure EntregarNota(not_examen : in int){
+        nota = nota_examen;
+        signal(cvAlumno);
+        wait(cvProfesor);
+        listo = false;
+    }
+}
+
+Monitor Evaluados{
+    int cant_alumnos = 0;
+
+    Procedure GetCantidadAlumnos(cant : out int){
+        cant_alumnos++;
+        cant = cant_alumnos;
+    }
+}
+
+Process Alumno[id = 0..29]{
+    int escritorio, nota;
+    Recepcion.Llegar(escritorio);
+    Examen examen = RealizarExamen();
+    Ecritorio[escritorio].Examen(examen, nota);
+}
+
+Process Profesor [id = 0..2]{
+    int nota;
+    Examen examen;
+    boolean seguir;
+    Atencion.QuedanAlumnos(seguir);
+    while (seguir){
+        Ecrtorio[id].EsperarExamen(examen);
+        nota = GenerarNota();
+        Escritorio[id].EntregarNota(nota);
+        Atencion.QuedanAlumnos(seguir);
+    }
+}

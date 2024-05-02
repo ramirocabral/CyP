@@ -1,0 +1,31 @@
+Process Persona[id = 1..N]{ 
+    Fila.llegar();
+    Imprimir();
+    Fila.salir();
+}
+
+Monitor Fila{
+   boolean libre = true;
+   cond cvFila;
+   int esperando = 0;
+
+    Procedure llegar(){
+        if (libre) {
+            libre = false;
+        }
+        else{
+            esperando++;
+            wait(cvFila);
+        }
+    }
+
+    Procedure Salir(){
+        if (esperando == 0) {
+            libre = true;
+        }
+        else{
+            esperando--;
+            signal(cvFila);
+        }
+    }
+}

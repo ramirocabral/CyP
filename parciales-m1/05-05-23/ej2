@@ -1,0 +1,28 @@
+Queue cola;
+sem mutex, espera[N];
+siguiente = -1;
+
+Process Auto[id = 0..N-1]{
+    P(mutex);
+    if (siguiente = -1){
+        siguiente = id;
+        V(mutex);
+    }
+    else{
+        push(cola,id);
+        V(mutex);
+        P(espera[id]);
+    }
+
+    Pasar();
+
+    P(mutex)
+    if (!cola.emtpy()){
+        pop(cola,siguiente);
+        V(espera[siguiente]);
+    }
+    else{
+        siguiente = -1;
+    }
+    V(mutex);
+}
