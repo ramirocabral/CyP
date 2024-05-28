@@ -11,7 +11,9 @@ Process Controlador[id = 0..14]{
 
 Process ModuloCentral{
     while True{
-        Pedido.Atender();
+        Pedido.Atender(id,medicion);
+        determinar(medicion);
+        Pedido.DarDatos();
     }
 }
 
@@ -28,12 +30,15 @@ Queue cola;
         accion = acciones[id];
     }
 
-    Procedure Atender(){
+    Procedure Atender(medicion,id : out int){
         if (cola.empty()){
             wait(cvModulo);
         }
         pop(fila,id,medicion);
-        determinar(acciones[id],medicion);
+    }
+
+    Procedure DarDatos(accion,id : in int){
+        acciones[id]  = accion;
         signal(espera);
     }
 }
