@@ -1,0 +1,74 @@
+Procedure ej6;
+    
+    Task Type Persona is
+        Entry Identificar(id : IN int);
+        Entry Comenzar();
+        Entry Puntaje(grupo : IN int, p : IN int);
+    End Persona;
+
+    arrPersonas : Array(1..20) of Persona;
+
+    Task Type Admin is
+        Entry Llegada();
+    End Admin;
+
+    Task Persona Body is
+        grupo,grupo_ganador,puntaje_grupo_ganador,id,puntaje : int;
+    Begin
+        accept Identificar(id,grupo);
+        for i=1 to 15 do
+            puntaje := puntaje + Moneda();
+        end loop;
+        Admin.Fin(grupo,puntaje);
+
+        accept Puntaje(G,P : IN int) is
+            grupo_ganador := G;
+            puntaje_grupo_ganador := P;
+        end Fin;
+    end Persona;
+        
+
+    Task Admin Body is
+        cola_grupo[5] : Queue;
+        int_grupo[5] : int;
+        grupo_act : int;
+        grupo_max : int;
+        monedas_grupo[5] : int;
+    Begin
+        int_grupo := ([5] 0);
+        monedas_grupo := ([5] 0);
+        terminar := 0;
+
+        while (terminaron < 20) do
+            SELECT
+                accept Llegada(id,G : in INT) is
+                    grupo_act := G;
+                    int_grupo[G]++;
+                    push(cola_grupo[G],id);
+                end Llegada;
+
+                if (int_grupo[grupo_act]==4)
+                    for i=1 to 4 do
+                        arrPersonas(pop(cola_grupo[grupo_act])).Comenzar();
+                    end loop;
+                end if;
+            OR
+                when (LLegada'Count = 0) =>
+                    Accept Fin(G,M : in INT) is
+                        monedas_grupo[G] := monedas_grupo[G] + M;
+                    end Fin;
+                    terminaron++;
+            end select;
+        end loop;
+
+        grupo_max := max(monedas_grupo);
+        for i=1 to 20 do
+            arrPersonas(i).Puntaje(grupo_max,monedas_grupo[grupo_max]);
+        end loop;
+    End Admin;
+
+Begin
+    for i=1 to 20 do
+        arrPersonas[i].Identificar(i);
+    end loop;
+End ej6;

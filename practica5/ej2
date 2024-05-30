@@ -1,0 +1,32 @@
+Procedure ej2;
+
+    Task Type Cliente;
+
+    arrClientes : Array(1..N) of Cliente;
+
+    Task Body Cliente is
+    Begin
+        SELECT
+            Empleado.Atencion();
+        OR DELAY 600
+            null;
+        end select;
+    end Cliente;
+
+
+    Task Empleado is
+        Atencion();
+    end Empleado;
+
+    Task Body Empleado
+    Begin
+        loop
+            accept Atencion() do
+                //realizar atencion
+            end Atencion;
+        end loop;
+    end Empleado;
+
+Begin
+    null;
+End ej2;

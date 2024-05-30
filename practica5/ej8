@@ -1,0 +1,75 @@
+Procedure ej8;
+
+    Task Type Persona is
+        Entry Identificacion(id : IN int);
+        Entry Recoleccion();
+    end Persona;
+
+    arrPersonas : Array(1..P) of Persona;
+
+    Task Type Camion;
+
+    arrCamiones : Array(1..3) of Camion;
+
+    Task Empresa is
+        Entry Reclamo(I:IN int);
+        Entry CamionLibre(ID : out int);
+    end Empresa;
+
+    Task Persona Body is
+        id : int;
+    Begin
+        accept Identificacion(I : IN int) is
+            id := I;
+        end Identificacion;
+
+        atendido := false;
+        while (not atendido) do
+            Empresa.Reclamo(id);
+            SELECT
+                accept Recoleccion();
+                atendido := true;
+            OR DELAY(900)
+                null;
+        end loop;
+    End Persona;
+
+    Task Empresa Body is
+        reclamos[P] : int;
+        esperando : int;
+    Begin
+        reclamos := ([P] 0);
+        esperando := 0;
+        loop
+            SELECT
+                when (esperando > 0) =>
+                    accept CamionLibre(ID:OUT int) is
+                        ID := Max(reclamos);
+                        reclamos[ID] := -1;
+                        esperando--;
+                    end CamionLibre; 
+            OR
+                accept Reclamo(I:IN int) is
+                    if (reclamos[I] <> -1) then //si aun no fue atendido
+                        reclamos[I]++;
+                        if (reclamos[I] == 0) then
+                            esperando++;
+                        end if;
+                    end if;
+        end loop;
+    End Empresa;
+
+    Task Camion Body is
+        id_act : int;
+    Begin
+        loop
+            Empresa.CamionLibre(id_act);
+            arrPersonas(id_act).Recoleccion();
+        end loop;
+    End;
+
+Begin
+    for i in 1..P do
+        arrPersonas(i).Identificacion(i);
+    end loop;
+End ej8;

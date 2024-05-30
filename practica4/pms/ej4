@@ -1,0 +1,29 @@
+Process Persona[id:0..P-1]{
+    Empleado!llegada(id);
+    Empleado?turno();
+    //usar simulador
+    Empleado!fin();
+}
+
+Process Empleado{
+    Queue cola;
+    int idP;
+
+    do
+        Persona[*]?llegada(idP) -> 
+            if (libre){
+              libre = false  
+              persona[idP]!turno();
+            } 
+            else 
+                push(cola,idP);
+
+        Persona[*]?fin() -> 
+            if (empty(cola)){
+                libre = true;
+            }
+            else{
+                Persona[pop(cola)]!turno();
+            }
+    od
+}

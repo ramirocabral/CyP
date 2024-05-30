@@ -1,0 +1,77 @@
+Procedure ej3;
+
+    Task Proceso1;
+    Task Proceso2;
+
+    Task Central is
+        Entry SenalUno(S:IN Senal);
+        Entry SenalDos(S:IN Senal);
+        Entry Fin();
+    end Central;
+
+    Task Timer is
+        Entry Inicio();
+    end Timer;
+
+
+    Task Proceso1 Body is
+        Senal S;
+    Begin
+        generarSenal(S);
+        loop
+            SELECT
+                Central.SenalUno(S);
+                generarSenal(S);
+            OR DELAY 120
+                generarSenal(S);
+            end select;
+        end loop;
+    end Proceso1;
+
+    Task Proceso2 Body is
+        Senal S; bool OK; 
+    Begin
+        generarSenal(S);
+        loop
+            SELECT 
+                Central.SenalDos(S);
+                generarSenal(S);
+            OR DELAY 60
+                null;     
+        end loop;
+    end Proceso1;
+
+    Task Timer Body is
+    Begin
+        accept Inicio();
+        delay(180);
+        Central.Fin();
+    end Timer;
+
+    Task Central Body is
+        bool ok;
+    Begin
+        accept SenalUno(S:IN Senal);
+        loop
+            SELECT
+                accept SenalUno(S:IN Senal);
+            OR
+                accept SenalDos(S:IN Senal);
+                ok = true;
+                Timer.Inicio();
+                while (ok) loop
+                    SELECT 
+                        when (Fin'count == 0) => accept SenalDos(S:IN Senal);
+                    OR
+                        accept Fin() do
+                            ok = false;
+                        end Fin;
+                    end select;
+                end loop;
+            end Select;
+        end loop;
+    end Central;
+
+Begin
+    null;
+End ej3;

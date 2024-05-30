@@ -1,0 +1,47 @@
+chan atencion;
+chan pedido[C];
+chan cocina;
+chan siguiente[3];
+chan recibir_pedido;
+
+Process Cliente[id:0..C-1]{
+    send atencion(id);
+    receive pedido[id]();
+}
+
+Process Cocinero[id:0..1]{
+    while (true){
+        receive cocina(idC);
+        //cocinar pedido
+        send pedido[idC]();
+    }
+}
+
+Process Coordinador{
+    int idE,idC;
+    while (true){
+        receive recibir_pedido(idV);
+        if (empty (atencion)){
+            idC = 0;
+        }
+        else{
+            receive atencion(idC);
+        }
+        send siguiente[idV](idC);
+    }
+}
+
+Process Vendedor[id:0..2]{
+    string p,rep;
+    int idC;
+    while (true){
+        send recibir_pedido(id);
+        receive siguiente[id](idC);
+        if (idC != 0){
+            send cocina(idC);
+        }
+        else{
+            delay(random(60,180));
+        }
+    }
+}

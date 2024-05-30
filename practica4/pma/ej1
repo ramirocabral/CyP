@@ -1,0 +1,20 @@
+chan Atencion;
+chan Respuesta[N];
+
+Process Persona[id:0..N-1]{
+    string R, Res;
+    R = GenerarReporte();
+    send Atencion(id,R)
+    receive Respuesta[id](Res);
+}
+
+Process Empleado[i:0..1]{
+    int idP;
+    Request R;
+    Respuesta res;
+    while True{
+        receive Atencion(idP,R);
+        res = GenerarRespuesta(R);
+        send Respuesta[idP](res);
+    }
+}

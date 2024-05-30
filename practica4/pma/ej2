@@ -1,0 +1,40 @@
+chan solicitar_atencion;
+chan recibir_caja[P];
+chan solicitud[5];
+chan respuesta[P];
+
+Process Persona[id: 0..P-1]{
+    int id_caja;
+    string sol,res;
+    send solicitar_atencion(id);
+    receive recibir_caja[id](id_caja);
+    send solicitud[id_caja](id,sol);
+    receive repuesta[id](res);
+    send terminar_atencion(id_caja);
+}
+
+Process Caja[id : 0..4]{
+    string sol,res;
+    int idP;
+    while (true){
+        receive solicitud[id](idP,sol);
+        res = generar_respuesta(sol);
+        send respuesta[idP](res);
+    } 
+}
+
+Process Coordinador{
+    int idP, id_caja;
+    int personas_caja[5] = ([5] 0);
+
+    while (true){
+        if (not empty(solicitar_atencion)) -> receive solicitar_atencion(idP);
+            id_caja = seleccionar_caja(personas_caja);
+            send recibir_caja[idP](id_caja);
+            personas_caja[id_caja]++;
+
+            (not empty(terminar_atencion)) -> receive terminar_atencion(id_caja);
+                personas_caja[id_caja]--;
+        end if
+    }
+}

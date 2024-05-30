@@ -1,0 +1,31 @@
+Process Espectador[id:0..E-1]{
+    Admin!llegada(id);
+    Admin?turno();
+    //usar la maquina
+    Admin!fin();
+}
+
+Process Admin{
+    Queue cola;
+    int idE;
+    boolean libre = true;
+
+    do
+        Espectador[*]?llegada(idE) ->
+            if (libre){
+                libre = false;
+                Espectador[idE]!turno();
+            }
+            else{
+                push(cola,idE);
+            }
+
+        Espectador[*]?fin() -> 
+            if (empty(cola)){
+                libre = true;
+            }
+            else{   
+                Espectador[pop(cola)]!turno();
+            }
+    od
+}

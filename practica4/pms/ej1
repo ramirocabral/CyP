@@ -1,0 +1,54 @@
+Process Empleado1{
+    Muestra muestra;
+    while True{
+        muestra = preparar_muestra();
+        AdminMuestra!(muestra);
+    }
+}
+
+Process Empleado2{
+    Muestra muestra;
+    Resultado res;
+    Set set;
+    while True{
+        AdminMuestra!pedido();
+        AdminMuestra?pedido(muestra);
+        set = preparar_set(muestra);
+        AdminSet!pedido(set);
+        Empleado3?(res);
+        //guardar resultado;
+    }
+}
+
+Process Empleado3{
+    Set set;
+    Resultado res;
+    while True{
+        AdminSet!pedido();
+        AdminSet?pedido(set);
+        res = generar_resultado(set);
+        Empleado2!(res);
+    }     
+}
+
+Process AdminMuestra{
+    Queue cola;
+    Muestra muestra;
+    do
+        Empleado1?(muestra) -> push(cola,muestra);
+
+        not empty(cola); Empleado2?pedido() -> 
+            Empleado2!pedido(pop(cola));
+    od
+}
+
+Process AdminSet{
+    Queue cola;
+    Set set;
+    Resultado res;
+    do
+        Empleado2?pedido(set) -> push(cola,set);
+
+        not empty(cola); Empleado3?pedido() -> Empleado3!pedido(pop(cola));
+    od
+}

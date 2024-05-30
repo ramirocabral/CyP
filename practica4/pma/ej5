@@ -1,0 +1,41 @@
+chan imprimir;
+chan imprimir_usuario;
+chan imprimir_director;
+
+Process Usuario[id:0..N-1]{
+    while (True){
+        //trabajar   
+        send imprimir_usuario(doc);
+        send signal();
+    }
+}
+
+Process Director{
+    while (True){
+        //trabajar
+        send imprimir_director(doc);
+        send signal();
+    }
+}
+
+Process Impresora[id:0..2]{
+    Doc documento;
+    while (True){
+        receive imprimir(documento);
+        //imprimir documento
+    }
+}
+
+Process Coordinador{
+    Documento doc;
+    while (True){
+        receive signal();
+        if (not empty(doc)){
+            receive imprimir_director(doc);
+        }
+        else{
+            receive imprimir_usuario(doc);
+        }
+        send imprimir(doc);
+    }
+}

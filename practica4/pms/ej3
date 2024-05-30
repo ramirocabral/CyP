@@ -1,0 +1,45 @@
+Process Alumno[id:0..P-1]{
+    Examen e;
+    int n;
+    Barrera!llegada();
+    Barrera?comienzo();
+
+    e = realizar_examen();
+
+    AdminExamen!entrega(e,idA);
+    Profesor[*]?nota(n);
+}
+
+Process Profesor[id:0..2]{
+    Examen e;
+    int nota,idA;
+    while True{
+        AdminExamen!pedido(id);
+        AdminExamen?(e,idA);
+        nota = corregir_examen(e);
+
+        Alumno[idA]!nota(nota);
+    }
+}
+
+Process Barrera{
+    int cant_alumnos = 0;
+    while (cant_alumnos < P){
+        Alumno[*]?llegada();
+        cant_alumnos++;
+    }
+    for (i=0 to P-1){
+        Alumno[i]!comienzo();
+    }
+}
+
+Process AdminExamen{
+    Queue cola; 
+    Examen e;
+
+    do
+        Alumno[*]?entrega(e,idA) -> push(cola,(e,idA));
+
+        not empty(cola);Profesor[*]?pedido(idP) -> Profesor[idP]!(pop(cola));
+    od
+}

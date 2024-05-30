@@ -1,0 +1,49 @@
+Procedure ej7
+
+    Task Type Servidor;
+
+    arrServidores : Array(1..8) of Servidor;
+
+    Task Especialista is
+        Entry EntregarHuella();
+        Entry Resultado();
+    end Especialista;
+
+    Task Especialista Body is
+        TEST : Huella;
+        valor_max,cod_max : int;
+    Begin
+        loop
+            TEST := ...;
+            for i in 1..16 loop
+                SELECT
+                    accept EntregarHuella(H:OUT Huella) is
+                        H := TEST;
+                    end Test;
+                OR                
+                    when (Test'Count = 0) =>
+                        accept Resultado(cod,valor : IN int)is
+                            if (valor > valor_max) then
+                                valor_max := valor; 
+                                cod_max := cod;
+                            end if;
+                        end Resultado;
+                end select;
+            end loop;
+        end loop;
+    end Especialista;
+
+    Task Servidor Body is
+        h : Huella;
+        cod,valor : int;
+    Begin
+        loop
+            Especialista.EntregarHuella(h);
+            Buscar(h,cod,valor);
+            Especialista.Resultado(cod,valor);
+        end loop;
+    end Servidor;
+
+Begin
+    null
+end ej7;

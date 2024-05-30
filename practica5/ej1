@@ -1,0 +1,135 @@
+--  Inciso A)
+Procedure ej1a
+
+    Task type Auto;
+    Task type Camioneta;
+    Task type Camion;
+
+    Task Puente is
+        Entry AccesoAuto();
+        Entry AccesoCamioneta();
+        Entry AccesoCamion();
+        Entry Salir(P:IN int);
+    end Puente
+
+    arrAutos:array(1..A) of Auto;
+    arrCamionetas:array(1..B) of Camioneta;
+    arrCamiones:array(1..C) of Camion;
+
+    Task body Auto is
+        double peso=...;
+    Begin
+        Puente.AccesoAuto();
+        Puente.Salir(peso);
+    End;
+
+    Task body Camioneta is
+        double peso=...;
+    Begin
+        Puente.AccesoCamioneta();
+        Puente.Salir(peso);
+    End;
+
+    Task body Camion is
+        double peso=...;
+    Begin
+        Puente.AccesoCamion();
+        Puente.Salir(peso);
+    End;
+
+    Task body Puente is
+        peso_act := 5; 
+    Begin
+        loop
+            SELECT
+                when (peso_act >= 1 and Salir'Count = 0) =>
+                    accept AccesoAuto()
+                    peso_act--;
+            OR
+                when (peso_act >= 2 and Salir'Count = 0) =>
+                    accept AccesoCamioneta();
+                    peso_act = peso_act - 2;
+            OR
+                when (peso_act >= 3 and Salir'Count = 0) =>
+                    accept AccesoCamioneta();
+                    peso_act = peso_act - 3;
+            OR
+                accept Salir(P:IN int) is
+                    peso_act = peso_act + P;
+                end Salir
+            end select;
+        end loop;
+    End;
+
+Begin
+    null;
+end ej1;
+
+
+--  Inciso B)
+
+Procedure ej1b
+
+    Task type Auto;
+    Task type Camioneta;
+    Task type Camion;
+
+    Task Puente is
+        Entry AccesoAuto();
+        Entry AccesoCamioneta();
+        Entry AccesoCamion();
+        Entry Salir(P:IN int);
+    end Puente
+
+    arrAutos:array(1..A) of Auto;
+    arrCamionetas:array(1..B) of Camioneta;
+    arrCamiones:array(1..C) of Camion;
+
+    Task body Auto is
+        double peso=...;
+    Begin
+        Puente.AccesoAuto();
+        Puente.Salir(peso);
+    End;
+
+    Task body Camioneta is
+        double peso=...;
+    Begin
+        Puente.AccesoCamioneta();
+        Puente.Salir(peso);
+    End;
+
+    Task body Camion is
+        double peso=...;
+    Begin
+        Puente.AccesoCamion();
+        Puente.Salir(peso);
+    End;
+
+    Task body Puente is
+        peso_act := 5; 
+    Begin
+        loop
+            SELECT
+                when (peso_act >= 1 and Salir'Count = 0 and AccesoCamion'Count = 0) =>
+                    accept AccesoAuto()
+                    peso_act--;
+            OR
+                when (peso_act >= 2 and Salir'Count = 0 and AccesoCamion'Count = 0) =>
+                    accept AccesoCamioneta();
+                    peso_act = peso_act - 2;
+            OR
+                when (peso_act >= 3 and Salir'Count = 0) =>
+                    accept AccesoCamioneta();
+                    peso_act = peso_act - 3;
+            OR
+                accept Salir(P:IN int) is
+                    peso_act = peso_act + P;
+                end Salir
+            end select;
+        end loop;
+    End;
+
+Begin
+    null;
+end ej1;

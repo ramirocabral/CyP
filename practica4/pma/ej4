@@ -1,0 +1,35 @@
+chan atencion; //comunicacion cliente-empleado
+chan cabina_asignada[N]; empleado envia la cabina al cliente;
+chan 
+
+
+Process Cliente[id : 0..N-1]{
+    int idC;
+    Comprobante comp;
+    send atencion(id);
+    receive cabina_asignada[id](idC);
+    //usar cabina idC;
+    send pagar(id,idC);
+    receive comprobante[id](comp);
+}
+
+Process Empleado{
+    int idP,idC;
+    Comprobante c;
+    Queue cola_cabinas;
+    for (i = 1 to 10) 
+        push(cola_cabinas,i);
+
+    while (true){
+        if (not empty(pagar)){
+            receive pagar(idP,idC);
+            Cobrar(idP,c);
+            send comprobante[idP](c);
+            push(cabinas,idC);
+        }
+        else if (not empty(pedidos) && (not empty(cola_cabinas)){
+            receive atencion(idC);
+            send cabina_asignada[idC](pop(cola_cabinas));
+        }
+    }
+}

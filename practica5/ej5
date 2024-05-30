@@ -1,0 +1,40 @@
+Procedure ej5;
+
+    Task Type Usuario;
+
+    arrUsuarios : Array(1..U) of Usuario;
+
+    Task Servidor is
+        
+
+    Task Usuario Body is
+        doc : string;
+        ok : bool;
+    Begin
+        ok := false;
+        doc := generarDocumento();  
+        while (not ok) loop
+            SELECT
+                Servidor.ProcesarDoc(doc:OUT string, correcto : IN bool);
+                ok := correcto;
+                if (not ok)
+                    doc := generarDocumento();
+                end if
+            OR DELAY(120)
+                delay(60);
+            end select;
+        end loop;
+    end Usuario
+
+    Task Servidor Body is
+    Begin
+        loop
+            accept ProcesarDoc(D:IN string; VALID:OUT boolean) is
+                procesar(D,VALID);
+            end ProcesarDoc;
+        end loop;
+    End Servidor;
+
+Begin
+    null;
+End ej5;

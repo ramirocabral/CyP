@@ -1,0 +1,95 @@
+Procedure ej4
+
+    Task Type Persona;
+
+    arrPersonas : Array(1..P) of Persona;
+
+    Task Type Enfermera;
+
+    arrEnfermeras : Array(1..E) of Enfermera;
+
+    Task Medico is
+        Entry AtencionP();
+        Entry AtencionE();
+    end Medico;
+
+    Task Escritorio is
+        Entry RetirarNota();
+        Entry LlegadaNota();
+    end Escritorio;
+
+    Task Persona Body is
+        intentos : int;
+    Begin
+        SELECT
+            Medico.AtencionP();
+        OR  DELAY(300);
+            intentos = 0;
+            while (intentos < 3) loop
+                SELECT
+                    Medico.AtencionP();
+                OR DELAY(600);
+                    intentos++;
+                end select;
+            end loop;
+        end select;
+    end Persona;
+
+    Task Escritorio Body is
+        Queue cola;
+        int cant;
+    Begin
+        cant := 0;
+        loop
+            SELECT
+                accept LlegadaNota(nota:IN string);
+                push(cola,nota);
+                cant ++;
+            OR
+                when (cant > 0) =>
+                    accept RetirarNota(nota:OUT string) do
+                        nota := pop(cola);
+                        cant--;
+                    end RetirarNota;
+            end select;
+        end loop;
+    End Escritorio;
+
+    Task Enfermera Body is
+        pedido : String;
+    Begin
+        loop
+            pedido := generarPedido();
+            SELECT
+                Medico.AtencionE(pedido);
+            ELSE
+                nota := generarNota(pedido);
+                Escritorio.LlegadaNota(nota);
+            end select;
+        end loop;
+    End Enfermera;
+
+    Task Medico Body is
+    Begin
+        loop
+            SELECT
+                accept AtencionP();
+            OR
+                when (AtencionP'count = 0) =>
+                    accept AtencionE();
+            end select;
+            //si no hay ningun pedido
+            ELSE 
+                SELECT
+                    Escritorio.RetirarNota(N:IN string);
+                    //procesar nota
+                ELSE
+                    null;
+                end select;
+            end select;
+        end loop;
+    End Medico;
+
+Begin
+    null;
+End ej4;

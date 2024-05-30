@@ -1,0 +1,27 @@
+Process Robot[id:0..R-1]{
+    String sitio
+    while True{
+        //buscar sitio infectado
+        Admin!(sitio);
+    } 
+}
+
+Process Admin{
+    Queue cola; 
+    String sitio;
+    do
+        Robot[*]?(sitio) -> push(cola,sitio);
+
+        (not empty(cola)); Analizador?pedido(); -> Analizador!(pop(cola));
+
+    od
+}
+
+Process Analizador{
+    String sitio;
+    while True{
+        Admin!pedido();
+        Admin?(sitio);
+        //analizar sitio
+    } 
+}
