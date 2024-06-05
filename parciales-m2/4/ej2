@@ -1,0 +1,19 @@
+Process Alumno[id:1..20]{
+    Examen ex;
+    Docente!llegada();
+    float nota;
+    ex = RealizarExamen();
+    Docente!examen(ex);
+    Docente?entregar_nota(nota);
+}
+
+Process Docente{
+    Examen examen;
+    float nota;
+    for (i:1..20){
+        Alumno[i]?llegada();
+        Alumno[i]?examen(examen);
+        nota = CorregirExamen(examen);
+        Alumno[i]!entregar_nota(nota);
+    }
+}

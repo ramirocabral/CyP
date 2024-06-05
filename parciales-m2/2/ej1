@@ -1,0 +1,17 @@
+chan atencion;
+chan fin[C];
+
+Process Cliente[id:1..C]{
+    send atencion(id);
+
+    receive fin[id]();
+}
+
+Process Empleado[id:1..2]{
+    int id_act;
+    while true{
+        receive atencion(id_act);
+        //atender
+        send fin[id_act]();
+    } 
+}

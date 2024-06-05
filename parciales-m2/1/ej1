@@ -1,0 +1,49 @@
+
+Process Corredor[id:1..C]{
+    int num_chaleco;
+    int pos;
+
+    Administrador.chaleco(id);
+    Coordinador[*]?entregarChaleco(num_chaleco);
+
+    Administrador?barrera();
+
+    //correr la carrera
+
+    Administrador.pedir_posicion(id);
+    Administrador?posicion(pos);
+}
+
+Process Administrador{
+    Queue fila;
+    int id_corredor, id_coord;
+    int listos = 0;
+    do
+        (listos < C); Corredor[*]?chaleco(id_corredor) -> 
+            push(fila,id_corredor);
+            listos++;
+
+        not empty(fila); Coordinador[*]?siguiente(id_coord) ->
+            Coordinador[id_coord]!asignar_corredor(pop(fila));
+    od
+
+    for i:(1..C){
+        Corredor[i]!barrera();
+    }
+
+    for i:(1..C){
+        Corredor[*]?pedir_posicion(id_corredor);
+        Corredor[id_corredor]!posicion(i);
+    }
+
+}
+
+Process Coordinador[id:1..3]{
+    int id_corredor,num_chaleco;
+    while true{
+        Administrador!siguiente(id);
+        Administrador?asignar_corredor(id_corredor);
+        num_chaleco = obtenerChaleco();
+        Corredor[id_corredor]!entregarChaleco(num_chaleco);
+    }
+}

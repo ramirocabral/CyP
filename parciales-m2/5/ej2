@@ -1,0 +1,54 @@
+Process Persona[id:1..N]{
+    bool urgencia = obtenerUrgencia();
+
+    if (urgencia){
+        Administrador!urgencia(id);
+    }else{
+        Administrador!fila(id);
+    }
+    Administrador?();
+    Usar_Telefono();
+    Administrador!liberar();
+}
+
+Process Administrador{
+    Queue cola_urgencia;
+    Queue cola;
+    int id_act;
+    bool libre = true;
+
+    do
+        Persona[*]?urgencia(id_act) => 
+            if (libre){
+                libre = false;
+                Persona[id_act]!();
+            }
+            else{
+                push(cola_urgencia,id_act);
+            }
+
+        //no deberia encolarse si tambien hay un pedido de urgencia
+        Persona[*]?fila(id_act) => 
+            if (libre){
+                libre = false;
+                Persona[id_act]!();
+            }
+            else{
+                push(cola,id_act);
+            }
+
+        Persona[*]?liberar() =>
+            if (empty (cola_urgencia) && empty(cola)){
+                libre = true;
+            }
+            else{
+                if (not empty(cola_urgencia)){
+                    Persona[pop(cola_urgencia)]!();
+                }
+                else{
+                    Persona[pop(col)]!();
+                }
+            }
+        
+    od
+}

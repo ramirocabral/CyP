@@ -1,0 +1,29 @@
+chan atencion;
+chan asignar_empleado[N](int);
+chan entregar_listado[3](List);
+chan entregar_presupuesto[N](float);
+
+Process Empleado[id:1..3]{
+    int id_persona;
+    Lista productos;
+    float presupuesto;
+
+    while true{
+        receive atencion(id_persona);
+        send atender[id_persona]();
+        receive listado[id_persona](productos);
+        presupuesto = ObtenerPresupuestoo(productos);
+        send entregar_presupuesto[id_persona](presupuesto);
+    }
+}
+
+Process Persona[id:1..N]{
+    int id_empleado;
+    float presupuesto;
+
+    Lista productos = ObtenerProductos();
+    send atencion(id);
+    receive atender[id]();
+    send listado[id](productos);
+    receive entregar_presupuesto(presupuesto);
+}

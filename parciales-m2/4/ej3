@@ -1,0 +1,59 @@
+Procedure ej3
+    
+    Task Especialista is
+    end Especialista;
+
+    Task Type Chico is
+    end Chico;
+
+    arrChicos : Array(1..N) of Chico;
+
+    Task Chico Body is
+        int id,puntaje,max_puntaje;
+        List(Elemento) lista;
+    Begin
+        accept Identificacion(id);
+        Especialista.entregarLista(lista);
+        //buscar los elementos
+        Especialista.obtenerPuntaje(id,lista,puntaje);
+        Especialista.maximoPuntaje(max_puntaje);;
+    end Chico;
+
+    Task Especialista Body is
+        puntajes : int[N];
+        int max_puntaje, max id;
+    Begin
+        for i:1..2*N loop
+            SELECT
+                accept entregarLista(L : OUT List)is
+                    L := GenerarLista();
+                end entregarLista;
+            OR
+                // damos prioridad a entregar las listas
+                when (entregarLista'Count == 0) =>
+                    accept obtenerPuntaje(ID : in int; L : IN list, P : OUT int) is
+                        P := DarPuntaje(L);
+                        puntajes[ID] := P;
+                    end obtenerPuntaje;
+            end select;
+        end loop;
+
+        max_puntaje := 0;
+        max_id := 1;
+        for i:1..N loop
+            if (puntajes[i] > max_puntaje) then
+                max_puntaje := putajes[i];
+                max_id := i;
+            end if;
+        end loop;
+
+        for i:1..N loop
+            arrChicos[i].maximoPuntaje(max_id);
+        end loop;
+
+    end Especialista;
+Begin
+    for i:1..N loop
+        arrChicos(i).Identificacion(i);
+    end loop;
+End ej3;

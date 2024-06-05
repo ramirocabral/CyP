@@ -1,0 +1,36 @@
+Process Encargado{
+    Queue cola_norte;
+    Queue cola_sur;
+    String destino;
+    Paquete paquete;
+
+    do
+        Clientes[*]?Recibir_Producto(paquete,destino) ->
+            if(destino == "norte"){
+                push(cola_norte,paquete);
+            }
+            else{
+                push(cola_sur,paquete);
+            }
+
+        (not empty(cola_norte)); Camion[0]?Llegada() ->
+            Camion[0]!Paquetes(cola_norte); //pasaje por valor (?
+            clear(cola_norte);
+
+        (not empty(cola_sur)); Camion[1]?Llegada() ->
+            Camion[1]!Paquetes(cola_sur);
+            clear(cola_sur);
+    od;
+}
+
+1,norte -- 2,sur
+Process Camion[id:0..1]{
+    Queue paquetes;
+
+    while true{
+        Encargado!Llegada();
+        Encargado?Paquetes(paquetes);
+
+        //entregar todos los paquetes en la cola
+    }
+}

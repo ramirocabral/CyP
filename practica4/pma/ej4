@@ -1,6 +1,5 @@
 chan atencion; //comunicacion cliente-empleado
 chan cabina_asignada[N]; empleado envia la cabina al cliente;
-chan 
 
 
 Process Cliente[id : 0..N-1]{

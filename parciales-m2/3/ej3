@@ -1,0 +1,65 @@
+Procedure ej3
+
+    Task Type Cliente is
+    end Cliente;
+
+    arrClientes : Array(1..C) of Cliente;
+
+    Task Servidor is
+    end Servidor;
+
+    Task Type Impresora is
+        Entry Identificacion()
+    end Impresora;
+
+    impresoras : Array(0..1) of Impresora;
+
+    Task Servidor Body is
+        cola_bn, cola_color;
+    Begin
+        SELECT
+            Accept ImpresionBN(id : IN int; D:IN Documento) is
+                push(cola_bn,(id,D));
+            end ImpresionBN;
+        OR
+            Accept ImpresionColor(d : IN int; D:IN Documento) is
+                push(cola_color,(id,D));
+            end ImpresionColor;
+        OR
+            when (not empty(cola_bn)) =>
+                Accept Siguiente_BN(id : OUT int; D:OUT Documento) is
+                    D := pop(cola_bn);
+                end ImpresionBN;
+        OR
+            when (not empty(cola_bn) || not empty(cola_color) =>
+                Accept Siguiente_color(id : OUT int; D:OUT Documento) is
+                    if (not empty(cola_color)){
+                        D := pop
+                    }
+                end ImpresionBN;
+        end select;
+    end Servidor;
+
+    Task Impresora Body is
+        doc : Documento;
+        id,id_cliente : integer;
+    Begin
+        Accept Identificacion(ID : IN int) is
+            id := ID;
+        end Identificacion;
+        loop
+            if (id == 1){
+                Impresora.Siguiente_BN(id_cliente,doc);
+                Imprimir(doc);
+                arrClientes(id_cliente).Fin();
+            }
+            else{
+                Impresora.Siguiente_color(id_cliente,doc);
+                Imprimir(doc);
+                arrClientes(id_cliente).Fin();
+            }
+        end loop;
+    end Impresora;
+Begin
+    null;
+End ej3;

@@ -1,0 +1,32 @@
+chan atencion_baja;
+chan atencion_alta;
+chan fin[N];
+
+Process Persona[id: 1..N]{
+    String prioridad = obtenerPriodidad();  
+
+    if (prioridad == "ALTA"){
+        send atencion_alta(id);
+    }
+    else{
+        send atencion_baja(id);
+    }
+    send signal();
+
+    receive fin[id]();
+}
+
+Process Empleado{
+    int id_act;
+    while true{
+        receive signal();
+        if (not empty(atencion_alta)){
+            receive atencion_alta(id_act);
+        }
+        else{
+            receive atencion_baja(id_act);
+        }
+        atender(id_act);
+        send fin[id_act]();
+    }
+}

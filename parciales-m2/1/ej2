@@ -1,0 +1,48 @@
+
+
+Process Persona[id:1..P]{
+    int tipo_pedido;
+    //blablabbla
+
+}
+
+Process Admin{
+    int id_persona, id_emp, atendidos = 0;
+    Queue cola_personas;
+    while true{
+        receive pedido(id_emp);
+        if (empty(cola_personas)){
+            id_persona = -1;
+            tipo_pedido = 0;
+        }
+        else{
+            receive atencion(id_persona,tipo_pedido);
+        }
+        atendidos++;
+        send Siguiente[id_emp](id_persona,tipo_pedido,atendidos);
+    }
+}
+
+Process Empleado[id:1..3]{
+    int id_act,tipo_pedido,atendidos;
+    send pedido(id);
+    receive Siguiente[id](id_act,tipo_pedido,atendidos);
+    while (atendidos<P){
+        // no hay pedido
+        if (id_act == -1){
+            delay(300);
+        }
+        else{
+            if (tipo_pedido == 1){//iniciar tramite  
+                num_tramite = IniciarTramite(id_act);
+                send Fin[id_act](num_tramite);
+            } 
+            else{
+                dictamen = ObtenerDictamen(id_act);
+                send Fin[id_act](dictamen);
+            }
+        }
+        send pedido(id);
+        receive Siguiente[id](id_act,tipo_pedido,atendidos);
+    } 
+}

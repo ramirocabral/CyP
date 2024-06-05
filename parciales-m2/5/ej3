@@ -1,0 +1,41 @@
+Procedure ej3
+    Task Type Paciente is
+        Identificacion(id:IN int);
+    end Paciente;
+
+    arrPacientes : Array(1..P) of Paciente;
+
+    Task Medico is
+        Atencion(ID:IN int);
+    end Medico;
+
+    Task Paciente Body is
+        id : int;
+    Begin
+        accept Identificacion(ID:IN int) is
+            id := ID;
+        end Identificacion;
+        Medico.Atencion(id);
+    end Paciente;
+
+
+    Task Medico Body is
+        int atendidos;
+    Begin
+        atendidos := 0;
+        while (atendidos<P) loop
+            SELECT
+                accept Atencion(ID:IN int) is
+                    AtenderPaciente(ID);
+                end Atencion;
+                atendidos := atendidos + 1;
+            ELSE
+                delay(600);
+        end loop;
+    end Medico;
+
+Begin
+    for i in (1..P) loop
+        arrPacientes(i).Identificacion(i);
+    end loop;
+End ej3;
